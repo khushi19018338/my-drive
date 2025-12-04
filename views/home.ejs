@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Drive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+
+<body class="bg-gray-100 h-screen flex">
+
+  <!-- Sidebar -->
+  <div class="w-64 bg-white shadow-md p-4 space-y-6">
+    <h2 class="text-xl font-bold">📁 My Drive</h2>
+
+    <ul class="space-y-3">
+      <li class="font-semibold text-blue-600"><i class="fa-solid fa-folder"></i> Files</li>
+      <li><i class="fa-solid fa-trash"></i> Trash</li>
+      <li><i class="fa-solid fa-share-nodes"></i> Shared</li>
+    </ul>
+
+    <a href="/user/logout" class="block mt-10 text-red-600 underline">Logout</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 p-6">
+    
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">Welcome, <%= user.username %></h1>
+
+      <!-- Upload Form -->
+      <form action="/files/upload" method="POST" enctype="multipart/form-data" class="flex">
+        <input type="file" name="file" required class="hidden" id="fileInput"/>
+
+        <button type="button"
+          onclick="document.getElementById('fileInput').click()"
+          class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 mr-2">
+          <i class="fa-solid fa-upload"></i> Upload
+        </button>
+
+        <button type="submit"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Save
+        </button>
+      </form>
+    </div>
+
+    <!-- Files Section -->
+    <div class="bg-white p-4 rounded shadow">
+
+      <div class="flex justify-between mb-4">
+        <h2 class="text-xl font-semibold">Files</h2>
+
+        <button id="toggleViewBtn" class="px-3 py-1 bg-gray-200 rounded">
+          <i class="fa-solid fa-table-cells"></i>
+        </button>
+      </div>
+
+      <% if (files.length === 0) { %>
+        <p>No files uploaded yet.</p>
+      <% } else { %>
+
+      <!-- Grid View -->
+      <div id="gridView" class="grid grid-cols-4 gap-4">
+        <% files.forEach(file => { %>
+          <div class="border p-3 rounded text-center hover:shadow">
+            <i class="fa-solid fa-file text-3xl"></i>
+            <p class="truncate mt-2"><%= file.name %></p>
+
+            <div class="flex justify-center space-x-3 mt-3">
+              <a href="<%= file.url %>" target="_blank" class="text-blue-600">
+                <i class="fa-solid fa-eye"></i>
+              </a>
+              <a href="<%= file.url %>" download class="text-green-600">
+                <i class="fa-solid fa-download"></i>
+              </a>
+              <a href="/files/delete/<%= file._id %>" class="text-red-600">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </div>
+
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- List View -->
+      <div id="listView" class="hidden">
+        <% files.forEach(file => { %>
+          <div class="flex justify-between items-center border-b p-2 hover:bg-gray-50">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-file text-gray-600"></i>
+              <a href="<%= file.url %>" target="_blank" class="text-blue-600 underline">
+                <%= file.name %>
+              </a>
+            </div>
+            
+            <div class="flex space-x-4">
+              <a href="<%= file.url %>" target="_blank" class="text-blue-600">
+                <i class="fa-solid fa-eye"></i>
+              </a>
+              <a href="<%= file.url %>" download class="text-green-600">
+                <i class="fa-solid fa-download"></i>
+              </a>
+              <a href="/files/delete/<%= file._id %>" class="text-red-600">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <% } %>
+
+    </div>
+  </div>
+
+  <script>
+    const grid = document.getElementById("gridView");
+    const list = document.getElementById("listView");
+    const toggleBtn = document.getElementById("toggleViewBtn");
+
+    toggleBtn.addEventListener("click", () => {
+      grid.classList.toggle("hidden");
+      list.classList.toggle("hidden");
+    });
+  </script>
+
+</body>
+</html>
